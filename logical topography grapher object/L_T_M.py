@@ -58,10 +58,8 @@ def show_connections():
 def load_data():
     main_window.filename = filedialog.askopenfilename(initialdir = "\Test_multifile_script\logical topography grapher object\data", filetype = (("yaml files","*.yaml"),("all files", "*.*")))
 
-def print_test():
-    global Y_stuff
-    print(Y_stuff)
 
+#temp button/ function will be used elsewhere
 def export_yaml_stuff():
     global Y_stuff
     global IsClicked
@@ -128,9 +126,9 @@ set_parent = Button(N_frame2, text = "set host", command = set_parent)
 set_child = Button(N_frame2, text = "set child", command = set_child)
 add_N = Button(Value_frame, text = "add node", command = add)
 clear_all = Button(N_frame2_5, text = "clear selections", command = clear_selec)
+#tentative save button
 show_connec = Button(C_frame, text= "show connections", command = save_config)
 TEST1 = Button(C_frame, text = "Exp", command = export_yaml_stuff)
-TEST2 = Button(C_frame, text= "print_test", command = print_test)
 
 type_menu.pack()
 node_list1.pack(side = LEFT,padx = 5,anchor = 'w')
