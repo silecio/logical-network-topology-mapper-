@@ -1,10 +1,13 @@
+
+
+
 #object oriented ver
 from tkinter import *
 from tkinter import filedialog
 import yaml
 import subprocess
 import os
-
+import loader
 
 main_window = Tk()
 IsClicked = False
@@ -17,6 +20,7 @@ N_frame2 = LabelFrame(Node_frame)
 N_frame2_5 = LabelFrame(N_frame2)
 N_frame3 = LabelFrame(Node_frame)
 C_frame = LabelFrame(main_window)
+
 
 scrollbar_s = Scrollbar(C_frame, orient = HORIZONTAL) 
 ##Conn_frame = LabelFrame(main_window)
@@ -68,40 +72,48 @@ def export_yaml_stuff():
     T_C = False
     Y = connection_button()  
     Y_stuff = yaml.dump(Y)
+    ##these are just to test what the yaml.load would output like
+    #oppipip = yaml.load(Y_stuff)
+    #print(oppipip)
+    #print(oppipip[0]["server a"]["connections"][0][0])
     IsClicked = False
     T_C = True
     print(Y_stuff)
+    parents.clear()
+    children.clear()
 #needs rework due to issues, interactions with save_config causes a second copy of Parent in conn_list1 
 def connection_button():
     #want format [[PARENT,[CHILD,CHILD...],[PARENT[CHILD,CHILD...]ETC]
     class parent:
         def __init__(self):
-            self.name = parents[0]
-            self.cons_l = children[0]
+            self.name = parents[-1]
+            self.cons_l = children[-1]
     global IsClicked
     global T_C
     global M_parents
     p = parent()
+    print("P",parents)
     x = p.name
+    print("name",p.name)
     y = ' '.join(x[0])
     #needs rework here, isclicked stops writing to listbox however Y_mp must not be written to unless is clicked is false
     #change when Yaml dump occurs?
     fin_p = {y:{"connections": p.cons_l}}
     if T_C ==True:
         M_parents.append(fin_p)
-        print("T_C")
     if IsClicked == False:
         conn_list1.insert(END,y)
-        print("CLCIEKD")
     return(M_parents)
 
-#due to calling connection button connection list item is entered again after making the connection.
+#When saving name entered into con_list1 remains the same due to line 86 being (y = ' '.join(x[0])) x[0] being the problem
 def save_config():
     global Y_stuff
     print(Y_stuff)
     f = filedialog.asksaveasfile(mode = 'w', defaultextension = ".yaml", initialdir = "\Test_multifile_script\logical topography grapher object\data",filetype = (("yaml files", "*.yaml"),("all files", "*.*")))
     f.write(Y_stuff)
     f.close()
+
+
 options = ["server","host","switch"]
 
 clicked = StringVar()
@@ -127,7 +139,8 @@ set_child = Button(N_frame2, text = "set child", command = set_child)
 add_N = Button(Value_frame, text = "add node", command = add)
 clear_all = Button(N_frame2_5, text = "clear selections", command = clear_selec)
 #tentative save button
-show_connec = Button(C_frame, text= "show connections", command = save_config)
+show_connec = Button(C_frame, text= "Save", command = save_config)
+load_config = Button(C_frame, text = "Load", command = loader.loader)
 TEST1 = Button(C_frame, text = "Exp", command = export_yaml_stuff)
 
 type_menu.pack()
@@ -137,8 +150,9 @@ make_conn.pack(side = TOP, padx = 5, pady = 5)
 set_child.pack(side = RIGHT, padx = 5)
 clear_all.pack(side = BOTTOM,padx = 5, pady = 5)
 show_connec.pack(side = TOP)
+load_config.pack()
 TEST1.pack()
-TEST2.pack()
+
 add_N.pack()
 node_list2.pack(side = RIGHT,padx = 5, anchor = 'e')
 conn_list1.pack(side = LEFT)
