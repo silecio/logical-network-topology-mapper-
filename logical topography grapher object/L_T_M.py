@@ -1,6 +1,9 @@
 #object oriented ver
 from tkinter import *
+from tkinter import filedialog
 import yaml
+import subprocess
+import os
 main_window = Tk()
 ##main_window.geometry("500x100")
 Value_frame = LabelFrame(main_window)
@@ -42,8 +45,17 @@ def set_child():
     index= node_list2.curselection()
     child = [x[i] for i in index]
     children.append(child)
+def show_connections():
+    x = conn_list1.get(0,END)
+    index = conn_list1.curselection() 
+    print(x)
+#used to open specific saves
+##not yet functional
+def load_data():
+    main_window.filename = filedialog.askopenfilename(initialdir = "\Test_multifile_script\logical topography grapher object\data", filetype = (("yaml files","*.yaml"),("all files", "*.*")))
+    
 
-#Working(not finished, needs to store the Yaml data and format yaml correctly) 
+#needs rework due to issues, interactions with save_config causes a second copy of Parent in conn_list1 
 def connection_button():
     #want format [[PARENT,[CHILD,CHILD...],[PARENT[CHILD,CHILD...]ETC]
     class parent:
@@ -52,19 +64,24 @@ def connection_button():
             self.cons_l = children[0]
     
     p = parent()
-    fin_p = {"temp":{"parent": p.name, "connections": p.cons_l}}
+    x = p.name
+    y = ' '.join(x[0])
+    fin_p = {y:{"connections": p.cons_l}}
     M_parents.append(fin_p)
     Y_mp = yaml.dump(M_parents)
     print(Y_mp)
     print(M_parents)
     print(Names)
-    x = p.name
-    y = ' '.join(x[0])
-
+    print (y)
     conn_list1.insert(END,y)
-    parents.clear()
-    children.clear()
-    
+    return(Y_mp)
+
+#due to calling connection button connection list item is entered again after making the connection.
+def save_config():
+    Y = connection_button()
+    f = filedialog.asksaveasfile(mode = 'w', defaultextension = ".yaml", initialdir = "\Test_multifile_script\logical topography grapher object\data",filetype = (("yaml files", "*.yaml"),("all files", "*.*")))
+    f.write(Y)
+    f.close()
 options = ["server","host","switch"]
 
 clicked = StringVar()
@@ -89,6 +106,7 @@ set_parent = Button(N_frame2, text = "set host", command = set_parent)
 set_child = Button(N_frame2, text = "set child", command = set_child)
 add_N = Button(Value_frame, text = "add node", command = add)
 clear_all = Button(N_frame2_5, text = "clear selections", command = clear_selec)
+show_connec = Button(C_frame, text= "show connections", command = save_config)
 
 type_menu.pack()
 node_list1.pack(side = LEFT,padx = 5,anchor = 'w')
@@ -96,6 +114,7 @@ set_parent.pack(side = LEFT, padx = 5)
 make_conn.pack(side = TOP, padx = 5, pady = 5)
 set_child.pack(side = RIGHT, padx = 5)
 clear_all.pack(side = BOTTOM,padx = 5, pady = 5)
+show_connec.pack(side = TOP)
 add_N.pack()
 node_list2.pack(side = RIGHT,padx = 5, anchor = 'e')
 conn_list1.pack(side = LEFT)
