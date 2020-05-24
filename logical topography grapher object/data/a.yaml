@@ -1,0 +1,7 @@
+- server a:
+    connections: &id001
+    - !!python/tuple
+      - host
+      - a
+- server a:
+    connections: *id001
