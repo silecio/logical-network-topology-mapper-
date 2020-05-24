@@ -4,7 +4,11 @@ from tkinter import filedialog
 import yaml
 import subprocess
 import os
+
+
 main_window = Tk()
+IsClicked = False
+T_C = True
 ##main_window.geometry("500x100")
 Value_frame = LabelFrame(main_window)
 Node_frame = LabelFrame(main_window)
@@ -53,8 +57,22 @@ def show_connections():
 ##not yet functional
 def load_data():
     main_window.filename = filedialog.askopenfilename(initialdir = "\Test_multifile_script\logical topography grapher object\data", filetype = (("yaml files","*.yaml"),("all files", "*.*")))
-    
 
+def print_test():
+    global Y_stuff
+    print(Y_stuff)
+
+def export_yaml_stuff():
+    global Y_stuff
+    global IsClicked
+    global T_C
+    IsClicked = True
+    T_C = False
+    Y = connection_button()  
+    Y_stuff = yaml.dump(Y)
+    IsClicked = False
+    T_C = True
+    print(Y_stuff)
 #needs rework due to issues, interactions with save_config causes a second copy of Parent in conn_list1 
 def connection_button():
     #want format [[PARENT,[CHILD,CHILD...],[PARENT[CHILD,CHILD...]ETC]
@@ -62,25 +80,29 @@ def connection_button():
         def __init__(self):
             self.name = parents[0]
             self.cons_l = children[0]
-    
+    global IsClicked
+    global T_C
+    global M_parents
     p = parent()
     x = p.name
     y = ' '.join(x[0])
+    #needs rework here, isclicked stops writing to listbox however Y_mp must not be written to unless is clicked is false
+    #change when Yaml dump occurs?
     fin_p = {y:{"connections": p.cons_l}}
-    M_parents.append(fin_p)
-    Y_mp = yaml.dump(M_parents)
-    print(Y_mp)
-    print(M_parents)
-    print(Names)
-    print (y)
-    conn_list1.insert(END,y)
-    return(Y_mp)
+    if T_C ==True:
+        M_parents.append(fin_p)
+        print("T_C")
+    if IsClicked == False:
+        conn_list1.insert(END,y)
+        print("CLCIEKD")
+    return(M_parents)
 
 #due to calling connection button connection list item is entered again after making the connection.
 def save_config():
-    Y = connection_button()
+    global Y_stuff
+    print(Y_stuff)
     f = filedialog.asksaveasfile(mode = 'w', defaultextension = ".yaml", initialdir = "\Test_multifile_script\logical topography grapher object\data",filetype = (("yaml files", "*.yaml"),("all files", "*.*")))
-    f.write(Y)
+    f.write(Y_stuff)
     f.close()
 options = ["server","host","switch"]
 
@@ -107,6 +129,8 @@ set_child = Button(N_frame2, text = "set child", command = set_child)
 add_N = Button(Value_frame, text = "add node", command = add)
 clear_all = Button(N_frame2_5, text = "clear selections", command = clear_selec)
 show_connec = Button(C_frame, text= "show connections", command = save_config)
+TEST1 = Button(C_frame, text = "Exp", command = export_yaml_stuff)
+TEST2 = Button(C_frame, text= "print_test", command = print_test)
 
 type_menu.pack()
 node_list1.pack(side = LEFT,padx = 5,anchor = 'w')
@@ -115,6 +139,8 @@ make_conn.pack(side = TOP, padx = 5, pady = 5)
 set_child.pack(side = RIGHT, padx = 5)
 clear_all.pack(side = BOTTOM,padx = 5, pady = 5)
 show_connec.pack(side = TOP)
+TEST1.pack()
+TEST2.pack()
 add_N.pack()
 node_list2.pack(side = RIGHT,padx = 5, anchor = 'e')
 conn_list1.pack(side = LEFT)
